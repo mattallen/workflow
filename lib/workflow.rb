@@ -25,7 +25,6 @@ module Workflow
       while @@specifications[target].nil? and target != Object
         target = target.superclass
       end
-      puts target
       @@specifications[target]
     end
 
@@ -66,6 +65,10 @@ module Workflow
           alias_method :before_save_before_workflow, :before_save
           def before_save
             before_save_before_workflow
+            if self.new_record?
+              @workflow = Workflow.new(self.class)
+              @workflow.bind_to(self)
+            end
             self.workflow_state = @workflow.state.to_s
           end
         end
